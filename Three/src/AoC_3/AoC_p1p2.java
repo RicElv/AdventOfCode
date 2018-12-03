@@ -11,7 +11,6 @@ public class AoC_p1p2 {
 	int size = 1000;
 	int ID = 0;
 	int overlap;
-	StringBuilder sb = new StringBuilder();
 	HashMap<Integer,Integer[]> noOverlaps;
 	
 	AoC_p1p2 (Scanner input){
@@ -33,8 +32,6 @@ public class AoC_p1p2 {
 			int xLength  = dimensions[2];
 			int yLength  = dimensions[3];
 			
-			//System.out.println(xCorner + " " + xLength);
-			
 			while((xCorner + xLength > size) || (yCorner + yLength > size)){
 				resize();
 			}
@@ -42,10 +39,16 @@ public class AoC_p1p2 {
 			boolean IDoverlaps = false;
 			for(int y = yCorner; y < yCorner + yLength; y++){
 				for(int x = xCorner; x < xCorner + xLength; x++){
-					fabric[x][y]++;
-					if(fabric[x][y] > 1) {
+					int cur = fabric[x][y];
+					if(cur != 0) {
+						if(cur > 0){
+							overlap++;
+							noOverlaps.remove(cur);
+							fabric[x][y] = -1;
+						}
 						IDoverlaps = true;
-						if(fabric[x][y] == 2) overlap++;
+					} else {
+						fabric[x][y] = ID;
 					}
 				}
 			}
@@ -54,34 +57,14 @@ public class AoC_p1p2 {
 			}
 		}
 		System.out.println(overlap + " overlapping square inches");
-		
-		Set keys = noOverlaps.keySet();
-		Iterator iter = keys.iterator();
-		
-		
-		while (iter.hasNext()){
-			ID = (int) iter.next();
-			
-			Integer[] dimensions = noOverlaps.get(ID);
-			int xCorner  = dimensions[0];
-			int yCorner  = dimensions[1];
-			int xLength  = dimensions[2];
-			int yLength  = dimensions[3];
-			
-			boolean overlap = false;
-	   Out: for(int y = yCorner; y < yCorner + yLength; y++){
-				for(int x = xCorner; x < xCorner + xLength; x++){
-					if(fabric[x][y] > 1) {
-						overlap = true;
-						break Out;
-					}
-				}
-			}
-			if(!overlap) System.out.println("ID: " + ID +  " does not overlap");
-		} 
+		Set<Integer> keys = noOverlaps.keySet();
+		for(int i : keys){
+			System.out.println("ID: " + i + " claim does not overlap");
+		}
 	
 	}
 	
+	StringBuilder sb = new StringBuilder();
 	private Integer[] dimensions(String current){
 		int state = 0;
 		int xCorner = 0;
